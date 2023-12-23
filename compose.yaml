@@ -1,0 +1,30 @@
+services:
+  app:
+    image: kkraiushkin/hw2_todo
+    ports:
+      - 127.0.0.1:3000:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+    environment:
+      PSHOST: postgres
+      PSUSER: postgres
+      PSPASSWORD: hw2pass
+      PSDB: postgres
+
+  postgres:
+    image: postgres
+    volumes:
+      - todo-postgres-data:/var/lib/postgressql/data
+    environment:
+      POSTGRES_PASSWORD: hw2pass
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d postgres -h 127.0.0.1 -p 5432 -U postgres"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+      start_interval: 5s
+volumes:
+  todo-postgres-data:
